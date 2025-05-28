@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the calculator */
+        body {
+            font-family: "Inter", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #1a202c; /* Dark background */
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+
+        .calculator-display {
+            grid-column: span 4;
+            background-color: #2d3748; /* Darker display background */
+            color: #e2e8f0; /* Light text color */
+            text-align: right;
+            padding: 1rem;
+            font-size: 2.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+            word-break: break-all;
+            min-height: 6rem; /* Ensure enough height for display */
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+        }
+
+        .calculator-button {
+            background-color: #4a5568; /* Button background */
+            color: #e2e8f0; /* Button text color */
+            padding: 1.25rem;
+            font-size: 1.5rem;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none; /* Prevent text selection */
+        }
+
+        .calculator-button:hover {
+            background-color: #636b77; /* Lighter on hover */
+        }
+
+        .calculator-button:active {
+            transform: scale(0.98); /* Slight press effect */
+        }
+
+        .operator {
+            background-color: #3182ce; /* Blue for operators */
+        }
+
+        .operator:hover {
+            background-color: #4299e1;
+        }
+
+        .equals {
+            background-color: #38a169; /* Green for equals */
+        }
+
+        .equals:hover {
+            background-color: #48bb78;
+        }
+
+        .clear {
+            background-color: #e53e3e; /* Red for clear */
+        }
+
+        .clear:hover {
+            background-color: #f56565;
+        }
+
+        /* Span 2 columns for 0 button */
+        .span-2 {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full mx-4">
+        <div class="calculator-display" id="display">0</div>
+        <div class="calculator-grid">
+            <button class="calculator-button clear" data-action="clear">AC</button>
+            <button class="calculator-button operator" data-action="backspace">DEL</button>
+            <button class="calculator-button operator" data-action="percent">%</button>
+            <button class="calculator-button operator" data-action="divide">/</button>
+
+            <button class="calculator-button" data-value="7">7</button>
+            <button class="calculator-button" data-value="8">8</button>
+            <button class="calculator-button" data-value="9">9</button>
+            <button class="calculator-button operator" data-action="multiply">*</button>
+
+            <button class="calculator-button" data-value="4">4</button>
+            <button class="calculator-button" data-value="5">5</button>
+            <button class="calculator-button" data-value="6">6</button>
+            <button class="calculator-button operator" data-action="subtract">-</button>
+
+            <button class="calculator-button" data-value="1">1</button>
+            <button class="calculator-button" data-value="2">2</button>
+            <button class="calculator-button" data-value="3">3</button>
+            <button class="calculator-button operator" data-action="add">+</button>
+
+            <button class="calculator-button" data-value="0" class="span-2">0</button>
+            <button class="calculator-button" data-value=".">.</button>
+            <button class="calculator-button equals" data-action="equals">=</button>
+        </div>
+    </div>
+
+    <script>
+        // Get references to DOM elements
+        const display = document.getElementById('display');
+        const buttons = document.querySelectorAll('.calculator-button');
+
+        // Variables to store calculator state
+        let currentInput = '0';
+        let previousInput = '';
+        let operator = null;
+        let waitingForSecondOperand = false;
+
+        /**
+         * Updates the display with the current input or result.
+         * @param {string} value - The value to display.
+         */
+        function updateDisplay(value) {
+            display.textContent = value;
+        }
+
+        /**
+         * Handles number button clicks.
+         * @param {string} number - The number string (e.g., '7', '0').
+         */
+        function inputNumber(number) {
+            if (waitingForSecondOperand) {
+                currentInput = number;
+                waitingForSecondOperand = false;
+            } else {
+                currentInput = currentInput === '0' ? number : currentInput + number;
+            }
+            updateDisplay(currentInput);
+        }
+
+        /**
+         * Handles decimal point button click.
+         */
+        function inputDecimal() {
+            if (waitingForSecondOperand) {
+                currentInput = '0.';
+                waitingForSecondOperand = false;
+            } else if (!currentInput.includes('.')) {
+                currentInput += '.';
+            }
+            updateDisplay(currentInput);
+        }
+
+        /**
+         * Handles operator button clicks.
+         * @param {string} nextOperator - The operator string (e.g., '+', '-', '*', '/').
+         */
+        function handleOperator(nextOperator) {
+            const inputValue = parseFloat(currentInput);
+
+            if (operator && waitingForSecondOperand) {
+                operator = nextOperator;
+                return;
+            }
+
+            if (previousInput === '') {
+                previousInput = inputValue;
+            } else if (operator) {
+                const result = calculate(previousInput, inputValue, operator);
+                currentInput = String(result);
+                previousInput = result;
+                updateDisplay(currentInput);
+            }
+
+            waitingForSecondOperand = true;
+            operator = nextOperator;
+        }
+
+        /**
+         * Performs the calculation based on the operator.
+         * @param {number} firstOperand - The first number.
+         * @param {number} secondOperand - The second number.
+         * @param {string} op - The operator.
+         * @returns {number} The result of the calculation.
+         */
+        function calculate(firstOperand, secondOperand, op) {
+            switch (op) {
+                case '+':
+                    return firstOperand + secondOperand;
+                case '-':
+                    return firstOperand - secondOperand;
+                case '*':
+                    return firstOperand * secondOperand;
+                case '/':
+                    if (secondOperand === 0) {
+                        return 'Error'; // Handle division by zero
+                    }
+                    return firstOperand / secondOperand;
+                default:
+                    return secondOperand;
+            }
+        }
+
+        /**
+         * Resets the calculator to its initial state.
+         */
+        function resetCalculator() {
+            currentInput = '0';
+            previousInput = '';
+            operator = null;
+            waitingForSecondOperand = false;
+            updateDisplay(currentInput);
+        }
+
+        /**
+         * Handles the percentage operation.
+         */
+        function handlePercent() {
+            const value = parseFloat(currentInput);
+            if (!isNaN(value)) {
+                currentInput = String(value / 100);
+                updateDisplay(currentInput);
+            }
+        }
+
+        /**
+         * Handles the backspace (DEL) operation.
+         */
+        function handleBackspace() {
+            currentInput = currentInput.slice(0, -1);
+            if (currentInput === '') {
+                currentInput = '0';
+            }
+            updateDisplay(currentInput);
+        }
+
+        // Add event listeners to all buttons
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const { value } = button.dataset;
+                const { action } = button.dataset;
+
+                if (value) {
+                    inputNumber(value);
+                } else if (action) {
+                    switch (action) {
+                        case 'add':
+                        case 'subtract':
+                        case 'multiply':
+                        case 'divide':
+                            handleOperator(action === 'add' ? '+' : action === 'subtract' ? '-' : action === 'multiply' ? '*' : '/');
+                            break;
+                        case 'equals':
+                            if (operator && previousInput !== '') {
+                                const result = calculate(previousInput, parseFloat(currentInput), operator);
+                                currentInput = String(result);
+                                previousInput = '';
+                                operator = null;
+                                waitingForSecondOperand = false;
+                                updateDisplay(currentInput);
+                            }
+                            break;
+                        case 'clear':
+                            resetCalculator();
+                            break;
+                        case 'percent':
+                            handlePercent();
+                            break;
+                        case 'backspace':
+                            handleBackspace();
+                            break;
+                        case '.':
+                            inputDecimal();
+                            break;
+                    }
+                }
+            });
+        });
+
+        // Add keyboard support
+        document.addEventListener('keydown', (event) => {
+            const key = event.key;
+
+            if (key >= '0' && key <= '9') {
+                inputNumber(key);
+            } else if (key === '.') {
+                inputDecimal();
+            } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                handleOperator(key);
+            } else if (key === 'Enter' || key === '=') {
+                // Simulate equals button click
+                const equalsButton = document.querySelector('[data-action="equals"]');
+                if (equalsButton) equalsButton.click();
+            } else if (key === 'Backspace') {
+                handleBackspace();
+            } else if (key === 'Escape') { // 'Escape' key for 'AC'
+                resetCalculator();
+            } else if (key === '%') {
+                handlePercent();
+            }
+        });
+
+        // Initialize display
+        updateDisplay(currentInput);
+    </script>
+</body>
+</html>
