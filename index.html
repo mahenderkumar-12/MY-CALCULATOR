@@ -3,101 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Calculator</title>
+    <title>Mahender's New Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44jOVhsjuo5szUGNMzWzIuBy5ItSLRdPpEvK3K+XbQyYJAXbNxaPUkngL2TGd3xS0QyE9JQA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* Custom styles for the calculator */
+        /* Custom styles to enhance Tailwind and provide specific calculator layout */
         body {
-            font-family: "Inter", sans-serif;
+            font-family: "Inter", sans-serif; /* Use Inter font as per instructions */
             display: flex;
+            flex-direction: column; /* Stack heading and calculator vertically */
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            background-color: #1a202c; /* Dark background */
+            min-height: 100vh; /* Full viewport height */
+            background-color: #1f2937; /* Darker background for a sleek look */
+            color: #e5e7eb; /* Light text color */
+            padding: 1rem; /* Add some padding around the body */
+        }
+
+        .calculator-container {
+            background-color: #374151; /* Slightly lighter dark background for the calculator body */
+            border-radius: 1.5rem; /* More rounded corners */
+            padding: 1.5rem; /* Increased padding */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4); /* Deeper shadow */
+            max-width: 24rem; /* Max width for desktop, responsive by default */
+            width: 100%; /* Full width on smaller screens */
+        }
+
+        .calculator-display {
+            background-color: #111827; /* Very dark display background */
+            color: #f9fafb; /* Very light text for display */
+            text-align: right;
+            padding: 1.25rem 1rem; /* More vertical padding */
+            font-size: 2.75rem; /* Larger font size for display */
+            border-radius: 0.75rem;
+            margin-bottom: 1rem; /* More space below display */
+            word-wrap: break-word;
+            word-break: break-all;
+            min-height: 5rem; /* Ensure enough height */
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-end;
+            overflow: hidden; /* Hide overflow text */
         }
 
         .calculator-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 0.5rem;
-        }
-
-        .calculator-display {
-            grid-column: span 4;
-            background-color: #2d3748; /* Darker display background */
-            color: #e2e8f0; /* Light text color */
-            text-align: right;
-            padding: 1rem;
-            font-size: 2.5rem;
-            border-radius: 0.75rem;
-            margin-bottom: 0.5rem;
-            word-wrap: break-word;
-            word-break: break-all;
-            min-height: 6rem; /* Ensure enough height for display */
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns, each taking equal fraction of space */
+            gap: 0.75rem; /* Increased gap between buttons */
         }
 
         .calculator-button {
-            background-color: #4a5568; /* Button background */
-            color: #e2e8f0; /* Button text color */
-            padding: 1.25rem;
-            font-size: 1.5rem;
-            border-radius: 0.75rem;
+            background-color: #4b5563; /* Default button color */
+            color: #f9fafb; /* Button text color */
+            padding: 0.8rem; /* Reduced padding for smaller buttons */
+            font-size: 1.2rem; /* Reduced font size for smaller buttons */
+            border-radius: 0.75rem; /* Rounded corners for buttons */
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease; /* Add box-shadow transition */
             display: flex;
             justify-content: center;
             align-items: center;
             user-select: none; /* Prevent text selection */
+            border: none; /* Remove default button border */
+            outline: none; /* Remove outline on focus */
+            text-decoration: none; /* Remove underline for anchor tags styled as buttons */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1); /* Subtle button shadow */
         }
 
         .calculator-button:hover {
-            background-color: #636b77; /* Lighter on hover */
+            background-color: #6b7280; /* Lighter on hover */
+            transform: translateY(-2px); /* Slight lift effect */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
         }
 
         .calculator-button:active {
-            transform: scale(0.98); /* Slight press effect */
+            transform: translateY(0); /* Return to original position on click */
+            box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 1px 2px -1px rgba(0, 0, 0, 0.1); /* Pressed shadow */
+            background-color: #5d6673; /* Slightly darker when pressed */
         }
 
+        /* Specific styles for operator buttons */
         .operator {
-            background-color: #3182ce; /* Blue for operators */
+            background-color: #3b82f6; /* Blue for operators */
         }
 
         .operator:hover {
-            background-color: #4299e1;
+            background-color: #60a5fa;
         }
 
+        /* Specific styles for equals button */
         .equals {
-            background-color: #38a169; /* Green for equals */
+            background-color: #10b981; /* Green for equals */
         }
 
         .equals:hover {
-            background-color: #48bb78;
+            background-color: #34d399;
         }
 
+        /* Specific styles for clear button */
         .clear {
-            background-color: #e53e3e; /* Red for clear */
+            background-color: #ef4444; /* Red for clear */
         }
 
         .clear:hover {
-            background-color: #f56565;
+            background-color: #f87171;
         }
 
-        /* Span 2 columns for 0 button */
+        /* Style for the '0' button to span two columns */
         .span-2 {
             grid-column: span 2;
+        }
+
+        /* Styles for the custom 'Mahender' button */
+        .mahender-button-link {
+            background-color: #8b5cf6; /* Purple color for the personal button */
+            font-size: 0.9rem; /* Further reduced font size for Mahender button */
+            flex-direction: column; /* Stack icon and text vertically */
+            line-height: 1.2; /* Adjust line height for better spacing */
+            padding: 0.6rem; /* Reduced padding for Mahender button */
+        }
+        .mahender-button-link:hover {
+            background-color: #a78bfa; /* Lighter purple on hover */
+        }
+        .mahender-button-link i {
+            font-size: 1.4rem; /* Reduced icon size */
+            margin-bottom: 0.1rem; /* Reduced space between icon and text */
         }
     </style>
 </head>
 <body>
-    <div class="calculator bg-gray-800 p-6 rounded-2xl shadow-2xl max-w-md w-full mx-4">
+    <h1 class="text-4xl font-bold text-white mb-8 text-center drop-shadow-lg">Mahender's Calculator</h1>
+
+    <div class="calculator-container">
         <div class="calculator-display" id="display">0</div>
+
         <div class="calculator-grid">
             <button class="calculator-button clear" data-action="clear">AC</button>
             <button class="calculator-button operator" data-action="backspace">DEL</button>
-            <button class="calculator-button operator" data-action="percent">%</button>
+            
+            <a href="https://linktr.ee/mahenderkumar_1" target="_blank" rel="noopener noreferrer" 
+               class="calculator-button operator mahender-button-link">
+                <i class="fas fa-user-circle"></i> Mahender
+            </a>
+            
             <button class="calculator-button operator" data-action="divide">/</button>
 
             <button class="calculator-button" data-value="7">7</button>
@@ -115,89 +163,112 @@
             <button class="calculator-button" data-value="3">3</button>
             <button class="calculator-button operator" data-action="add">+</button>
 
-            <button class="calculator-button" data-value="0" class="span-2">0</button>
+            <button class="calculator-button span-2" data-value="0">0</button>
             <button class="calculator-button" data-value=".">.</button>
             <button class="calculator-button equals" data-action="equals">=</button>
         </div>
     </div>
 
     <script>
-        // Get references to DOM elements
+        // डिस्प्ले और सभी कैलकुलेटर बटनों के संदर्भ प्राप्त करें
         const display = document.getElementById('display');
-        const buttons = document.querySelectorAll('.calculator-button');
+        // 'calculator-button' क्लास वाले सभी तत्वों का चयन करता है जो एंकर टैग नहीं हैं
+        // यह सुनिश्चित करता है कि 'Mahender' लिंक बटन कैलकुलेटर लॉजिक को ट्रिगर न करे
+        const calculatorButtons = document.querySelectorAll('.calculator-button:not(a)');
 
-        // Variables to store calculator state
-        let currentInput = '0';
-        let previousInput = '';
-        let operator = null;
-        let waitingForSecondOperand = false;
+        // कैलकुलेटर के लॉजिक के लिए स्टेट वैरिएबल
+        let currentInput = '0'; // वर्तमान में दर्ज की जा रही या दिखाई जा रही संख्या को संग्रहीत करता है
+        let previousInput = null; // एक ऑपरेशन के पहले ऑपरेंड को संग्रहीत करता है
+        let operator = null; // चयनित ऑपरेटर (+, -, *, /) को संग्रहीत करता है
+        let waitingForSecondOperand = false; // यह इंगित करने के लिए फ़्लैग कि हम अगली संख्या के लिए तैयार हैं या नहीं
 
         /**
-         * Updates the display with the current input or result.
-         * @param {string} value - The value to display.
+         * दिए गए मान के साथ कैलकुलेटर डिस्प्ले को अपडेट करता है।
+         * यह सुनिश्चित करता है कि यदि आवश्यक हो तो फ़ॉन्ट आकार को समायोजित करके डिस्प्ले ओवरफ़्लो न हो (मूलभूत हैंडलिंग)।
+         * @param {string} value - प्रदर्शित करने के लिए स्ट्रिंग।
          */
         function updateDisplay(value) {
             display.textContent = value;
+            // लंबी संख्याओं के लिए मूलभूत फ़ॉन्ट आकार समायोजन
+            if (value.length > 12) {
+                display.style.fontSize = '1.8rem';
+            } else if (value.length > 8) {
+                display.style.fontSize = '2.2rem';
+            } else {
+                display.style.fontSize = '2.75rem'; // डिफ़ॉल्ट आकार
+            }
         }
 
         /**
-         * Handles number button clicks.
-         * @param {string} number - The number string (e.g., '7', '0').
+         * संख्याओं (0-9) के इनपुट को currentInput में जोड़कर हैंडल करता है।
+         * @param {string} number - दबाया गया अंक।
          */
         function inputNumber(number) {
             if (waitingForSecondOperand) {
+                // यदि नए ऑपरेंड की प्रतीक्षा कर रहे हैं, तो एक नया इनपुट शुरू करें
                 currentInput = number;
                 waitingForSecondOperand = false;
             } else {
+                // यदि वर्तमान इनपुट '0' है, तो इसे बदल दें; अन्यथा, संख्या जोड़ दें
                 currentInput = currentInput === '0' ? number : currentInput + number;
             }
             updateDisplay(currentInput);
         }
 
         /**
-         * Handles decimal point button click.
+         * दशमलव बिंदु इनपुट को हैंडल करता है।
+         * एक ही संख्या में कई दशमलव बिंदुओं को रोकता है।
          */
         function inputDecimal() {
             if (waitingForSecondOperand) {
+                // यदि कोई नई संख्या शुरू कर रहे हैं, तो इसे "0." बनाएं
                 currentInput = '0.';
                 waitingForSecondOperand = false;
             } else if (!currentInput.includes('.')) {
+                // यदि कोई दशमलव मौजूद नहीं है तो ही जोड़ें
                 currentInput += '.';
             }
             updateDisplay(currentInput);
         }
 
         /**
-         * Handles operator button clicks.
-         * @param {string} nextOperator - The operator string (e.g., '+', '-', '*', '/').
+         * ऑपरेटर बटन क्लिक्स (+, -, *, /) को हैंडल करता है।
+         * यदि कोई ऑपरेटर पहले से सक्रिय है तो लंबित गणना करता है।
+         * @param {string} nextOperator - क्लिक किया गया ऑपरेटर प्रतीक।
          */
         function handleOperator(nextOperator) {
             const inputValue = parseFloat(currentInput);
 
+            // यदि कोई ऑपरेटर पहले से सेट है और हम दूसरे ऑपरेंड की प्रतीक्षा कर रहे हैं,
+            // तो इसका मतलब है कि उपयोगकर्ता ने नई संख्या दर्ज किए बिना दूसरा ऑपरेटर दबाया।
+            // इस स्थिति में, बस ऑपरेटर को अपडेट करें।
             if (operator && waitingForSecondOperand) {
                 operator = nextOperator;
                 return;
             }
 
-            if (previousInput === '') {
+            // यदि previousInput शून्य है, तो यह पहला ऑपरेंड है
+            if (previousInput === null) {
                 previousInput = inputValue;
             } else if (operator) {
+                // यदि कोई पिछला ऑपरेंड और एक ऑपरेटर है, तो गणना करें
                 const result = calculate(previousInput, inputValue, operator);
                 currentInput = String(result);
-                previousInput = result;
+                previousInput = result; // परिणाम नया previousInput बन जाता है
                 updateDisplay(currentInput);
             }
 
+            // अगले ऑपरेंड की प्रतीक्षा करने के लिए फ़्लैग सेट करें और नया ऑपरेटर संग्रहीत करें
             waitingForSecondOperand = true;
             operator = nextOperator;
         }
 
         /**
-         * Performs the calculation based on the operator.
-         * @param {number} firstOperand - The first number.
-         * @param {number} secondOperand - The second number.
-         * @param {string} op - The operator.
-         * @returns {number} The result of the calculation.
+         * वास्तविक अंकगणितीय गणना करता है।
+         * @param {number} firstOperand - ऑपरेशन में पहली संख्या।
+         * @param {number} secondOperand - ऑपरेशन में दूसरी संख्या।
+         * @param {string} op - ऑपरेटर प्रतीक।
+         * @returns {number|string} ऑपरेशन का परिणाम, या शून्य से विभाजन के लिए 'Error'।
          */
         function calculate(firstOperand, secondOperand, op) {
             switch (op) {
@@ -209,27 +280,28 @@
                     return firstOperand * secondOperand;
                 case '/':
                     if (secondOperand === 0) {
-                        return 'Error'; // Handle division by zero
+                        return 'Error'; // अनंत को रोकने के लिए शून्य से विभाजन को हैंडल करें
                     }
                     return firstOperand / secondOperand;
                 default:
-                    return secondOperand;
+                    return secondOperand; // वैध ऑपरेटरों के साथ यहां नहीं पहुंचना चाहिए
             }
         }
 
         /**
-         * Resets the calculator to its initial state.
+         * कैलकुलेटर को उसकी प्रारंभिक स्थिति में रीसेट करता है।
          */
         function resetCalculator() {
             currentInput = '0';
-            previousInput = '';
+            previousInput = null;
             operator = null;
             waitingForSecondOperand = false;
             updateDisplay(currentInput);
         }
 
         /**
-         * Handles the percentage operation.
+         * प्रतिशत ऑपरेशन को हैंडल करता है।
+         * वर्तमान इनपुट को 100 से विभाजित करता है।
          */
         function handlePercent() {
             const value = parseFloat(currentInput);
@@ -240,25 +312,30 @@
         }
 
         /**
-         * Handles the backspace (DEL) operation.
+         * बैकस्पेस (DEL) ऑपरेशन को हैंडल करता है।
+         * वर्तमान इनपुट से अंतिम वर्ण को हटाता है।
          */
         function handleBackspace() {
-            currentInput = currentInput.slice(0, -1);
+            currentInput = currentInput.slice(0, -1); // अंतिम वर्ण हटा दें
             if (currentInput === '') {
-                currentInput = '0';
+                currentInput = '0'; // यदि इनपुट खाली हो जाता है, तो इसे वापस '0' पर सेट करें
             }
             updateDisplay(currentInput);
         }
 
-        // Add event listeners to all buttons
-        buttons.forEach(button => {
+        // सभी कैलकुलेटर बटनों (और 'Mahender' लिंक को छोड़कर) पर इवेंट लिसनर्स जोड़ें
+        calculatorButtons.forEach(button => {
             button.addEventListener('click', () => {
-                const { value } = button.dataset;
-                const { action } = button.dataset;
+                const { value, action } = button.dataset; // data-value या data-action प्राप्त करें
 
                 if (value) {
+                    // यदि यह एक संख्या या दशमलव बटन है
                     inputNumber(value);
+                    if (value === '.') {
+                        inputDecimal(); // डॉट के लिए inputDecimal को कॉल करें
+                    }
                 } else if (action) {
+                    // यदि यह एक एक्शन बटन है (ऑपरेटर, क्लियर, बराबर, आदि)
                     switch (action) {
                         case 'add':
                         case 'subtract':
@@ -267,33 +344,31 @@
                             handleOperator(action === 'add' ? '+' : action === 'subtract' ? '-' : action === 'multiply' ? '*' : '/');
                             break;
                         case 'equals':
-                            if (operator && previousInput !== '') {
+                            // जब '=' दबाया जाता है, तो अंतिम गणना करें
+                            if (operator && previousInput !== null) {
                                 const result = calculate(previousInput, parseFloat(currentInput), operator);
                                 currentInput = String(result);
-                                previousInput = '';
-                                operator = null;
-                                waitingForSecondOperand = false;
+                                previousInput = null; // पिछला इनपुट रीसेट करें
+                                operator = null; // ऑपरेटर रीसेट करें
+                                waitingForSecondOperand = false; // अब ऑपरेंड की प्रतीक्षा नहीं कर रहे हैं
                                 updateDisplay(currentInput);
                             }
                             break;
                         case 'clear':
-                            resetCalculator();
+                            resetCalculator(); // सभी स्टेट क्लियर करें
                             break;
                         case 'percent':
-                            handlePercent();
+                            handlePercent(); // प्रतिशत हैंडल करें
                             break;
                         case 'backspace':
-                            handleBackspace();
-                            break;
-                        case '.':
-                            inputDecimal();
+                            handleBackspace(); // बैकस्पेस हैंडल करें
                             break;
                     }
                 }
             });
         });
 
-        // Add keyboard support
+        // कैलकुलेटर संचालन के लिए कीबोर्ड समर्थन जोड़ें
         document.addEventListener('keydown', (event) => {
             const key = event.key;
 
@@ -304,19 +379,21 @@
             } else if (key === '+' || key === '-' || key === '*' || key === '/') {
                 handleOperator(key);
             } else if (key === 'Enter' || key === '=') {
-                // Simulate equals button click
+                // 'Enter' या '=' कुंजी के लिए बराबर बटन क्लिक को ट्रिगर करें
                 const equalsButton = document.querySelector('[data-action="equals"]');
                 if (equalsButton) equalsButton.click();
+                event.preventDefault(); // डिफ़ॉल्ट 'Enter' कुंजी व्यवहार (जैसे, फ़ॉर्म सबमिशन) को रोकें
             } else if (key === 'Backspace') {
                 handleBackspace();
-            } else if (key === 'Escape') { // 'Escape' key for 'AC'
+                event.preventDefault(); // ब्राउज़र बैक नेविगेशन को रोकें
+            } else if (key === 'Escape') {
                 resetCalculator();
             } else if (key === '%') {
                 handlePercent();
             }
         });
 
-        // Initialize display
+        // पेज लोड होने पर डिस्प्ले को इनिशियलाइज़ करें
         updateDisplay(currentInput);
     </script>
 </body>
